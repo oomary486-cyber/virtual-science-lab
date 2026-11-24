@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Laboratoire de Physique — Laboratoire Virtuel</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .inspector-card {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      width: 260px;
+      background: rgba(15, 23, 42, 0.94);
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 12px 14px;
+      color: #f1f5f9;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.55);
+      z-index: 20;
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      backdrop-filter: blur(8px);
+    }
+    .inspector-card.active {
+      display: flex;
+    }
+    .inspector-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #263248;
+      padding-bottom: 6px;
+    }
+    .inspector-title {
+      font-weight: 700;
+      font-size: 0.92rem;
+      color: #38bdf8;
+    }
+    .inspector-close {
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      font-size: 1rem;
+      cursor: pointer;
+      padding: 0 4px;
+    }
+    .inspector-close:hover {
+      color: #ffffff;
+    }
+    .inspector-info {
+      font-size: 0.8rem;
+      color: #cbd5e1;
+      line-height: 1.45;
+    }
+    .inspector-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 0.8rem;
+      color: #94a3b8;
+    }
+    .inspector-field select,
+    .inspector-field input[type="range"],
+    .inspector-field button {
+      width: 100%;
+    }
+    .stage-full-wrap {
+      position: relative;
+    }
+  </style>
+</head>
+<body class="full-lab-page">
+  <header class="topbar">
+    <div class="brand">
+      <span>⚡</span>
+      <h1>Laboratoire de Physique</h1>
+    </div>
+    <nav class="nav-links">
+      <a href="accueil.html" class="nav-btn">🏠 Accueil</a>
+      <a href="chimie.html" class="nav-btn">🧪 Chimie</a>
+      <a href="physique.html" class="nav-btn active">⚡ Physique</a>
+    </nav>
+  </header>
+
+  <main class="full-lab-main">
+    <section class="full-controls-bar">
+      <button id="rotatePhysBtn" type="button" class="secondary">↻ Pivoter</button>
+      <button id="duplicatePhysBtn" type="button" class="secondary">⧉ Dupliquer</button>
+      <button id="deletePhysBtn" type="button" class="secondary">🗑️ Supprimer (Suppr)</button>
+      <button id="resetPhysBtn" type="button" class="secondary">🔄 Réinitialiser</button>
+      <button id="toggleDrawerBtn" type="button" class="drawer-toggle-btn">🧰 Masquer matériel</button>
+    </section>
+
+    <div class="right-drawer-layout">
+      <section class="stage-full-wrap">
+        <canvas id="physCanvas" class="full-canvas" width="1360" height="640"></canvas>
+
+        <div id="physInspector" class="inspector-card" aria-live="polite">
+          <div class="inspector-top">
+            <span id="physInspectorTitle" class="inspector-title">Instrument</span>
+            <button id="physInspectorClose" type="button" class="inspector-close" title="Fermer">✕</button>
+          </div>
+          <div id="physInspectorInfo" class="inspector-info"></div>
+          <div id="physInspectorControls" class="inspector-field"></div>
+        </div>
+
+        <div id="physStatus" class="full-status-bar" aria-live="polite">
+          Cliquez sur un instrument pour afficher ses réglages ou appuyez sur Suppr pour effacer.
+        </div>
+      </section>
+
+      <aside id="rightMatPanel" class="right-mat-panel" aria-label="Barre de matériel physique">
+        <div class="right-mat-header">
+          <span>🧰 Matériel Physique</span>
+        </div>
+
+        <div>
+          <div class="mat-group-title">Électricité</div>
+          <div class="mat-grid-col">
+            <button type="button" class="mat-chip" data-phys-tool="generator">🔋 Générateur DC</button>
+            <button type="button" class="mat-chip" data-phys-tool="battery">🪫 Pile 4.5V</button>
+            <button type="button" class="mat-chip" data-phys-tool="resistor">📟 Résistor</button>
+            <button type="button" class="mat-chip" data-phys-tool="rheostat">🎛️ Rhéostat</button>
+            <button type="button" class="mat-chip" data-phys-tool="lamp">💡 Lampe</button>
+            <button type="button" class="mat-chip" data-phys-tool="motor">⚙️ Moteur DC</button>
+            <button type="button" class="mat-chip" data-phys-tool="switch">🎚️ Interrupteur</button>
+            <button type="button" class="mat-chip" data-phys-tool="ammeter">🔴 Ampèremètre</button>
+            <button type="button" class="mat-chip" data-phys-tool="voltmeter">🔵 Voltmètre</button>
+            <button type="button" class="mat-chip" data-phys-tool="multimeter">📟 Multimètre</button>
+          </div>
+        </div>
+
+        <div>
+          <div class="mat-group-title">Mécanique &amp; Mesures</div>
+          <div class="mat-grid-col">
+            <button type="button" class="mat-chip" data-phys-tool="balance">⚖️ Balance</button>
+            <button type="button" class="mat-chip" data-phys-tool="cylinder">📏 Éprouvette</button>
+            <button type="button" class="mat-chip" data-phys-tool="cube">🧊 Solide étalon</button>
+            <button type="button" class="mat-chip" data-phys-tool="dynamometer">📐 Dynamomètre</button>
+            <button type="button" class="mat-chip" data-phys-tool="pulley">🛞 Poulie</button>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <script src="lab-render.js"></script>
+  <script src="physique.js"></script>
+</body>
+</html>
